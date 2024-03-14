@@ -47,7 +47,6 @@ export default {
 
 <style scoped>
 input {
-  background: coral;
-  padding: 30px;
+  padding: 5px 10px;
 }
 </style>

@@ -1,11 +1,13 @@
 <template>
   <div>
     <p>{{ label }}</p>
-    <select @change="handleChange" >
+    <select :name="name" @change="handleChange" required>
       <option
+        value=""
+        selected
+      >Выберите значение</option><option
         v-for="option in options"
         :key="option.value"
-        :selected="option.selected"
       >{{ option.text }}</option>
     </select>
   </div>
@@ -23,6 +25,10 @@ export default {
     parentName:{
       type:String,
       default: "parent",
+    },
+    name:{
+      type:String,
+      required: true,
     },
     options: {
       type: Object,

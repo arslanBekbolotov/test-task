@@ -59,6 +59,7 @@
       {
         "name": "repeat-pass",
         "type": "password",
+        "value": "",
         "label": "Повторите пароль",
         "additional": {
           "parent": "pass"

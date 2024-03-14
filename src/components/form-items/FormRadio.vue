@@ -6,7 +6,7 @@
         v-for="option in options"
         :key="option.value"
     >
-      <input @change="handleChange" required type="radio" name="radio" :id="option.name" :value="option.value" :checked="option.selected" />
+      <input @change="handleChange" required type="radio" name="radio" :id="option.name" :value="option.value" />
       <label :for="option.value">{{ option.text }}</label>
     </div>
   </fieldset>
@@ -20,6 +20,10 @@ export default {
     label: {
       type: String,
       default: ''
+    },
+    name:{
+      type:String,
+      required: true,
     },
     parentName:{
       type:String,

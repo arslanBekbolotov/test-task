@@ -1,5 +1,5 @@
 <template>
-  <FormInput :label="label" type="text" @blur="updateValue"/>
+  <FormInput :label="label" type="password" @blur="updateValue"/>
 </template>
 
 <script>
