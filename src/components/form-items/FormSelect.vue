@@ -1,12 +1,11 @@
 <template>
   <div>
     <p>{{ label }}</p>
-    <select>
+    <select @change="handleChange" >
       <option
         v-for="option in options"
         :key="option.value"
         :selected="option.selected"
-        @change="selectOption"
       >{{ option.text }}</option>
     </select>
   </div>
@@ -23,25 +22,18 @@ export default {
     },
     parentName:{
       type:String,
-      default: "",
+      default: "parent",
     },
     options: {
       type: Object,
       required: true
     }
   },
-  data(){
-    return{
-      localValue:"",
-    }
-  },
-
   methods:{
-    selectOption(option) {
-      this.localValue = option.value;
-      this.$emit("change", this.name, option);
-    },
-
+    handleChange(event) {
+      const selectedValue = event.target.value;
+      this.$emit("change-value", this.parentName,this.name, selectedValue);
+    }
   }
 }
 </script>

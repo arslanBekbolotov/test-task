@@ -6,7 +6,7 @@
         v-for="option in options"
         :key="option.value"
     >
-      <input required type="radio" name="radio" :id="option.name" :value="option.value" :checked="option.selected" />
+      <input @change="handleChange" required type="radio" name="radio" :id="option.name" :value="option.value" :checked="option.selected" />
       <label :for="option.value">{{ option.text }}</label>
     </div>
   </fieldset>
@@ -21,12 +21,21 @@ export default {
       type: String,
       default: ''
     },
-
+    parentName:{
+      type:String,
+      default: "parent",
+    },
     options: {
       type: Object,
       required: true
     }
   },
+  methods:{
+    handleChange(event) {
+      const selectedValue = event.target.value;
+      this.$emit("change-value", this.parentName,this.name, selectedValue);
+    }
+  }
 }
 </script>
 

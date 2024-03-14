@@ -6,12 +6,12 @@
 
       <div v-for="(formItem,i) in form.items" :key="i">
         <form-input @blur="updateParentValue" :parent-name="form.id"  v-if="formItem.type === 'input'" :name="formItem.name" :label="formItem.label" />
-        <form-select @blur="updateParentValue" v-else-if="formItem.type === 'select'" :options="formItem.additional.options" :label="formItem.label"/>
-        <form-radio @blur="updateParentValue" v-else-if="formItem.type === 'radio'" :options="formItem.additional.options"/>
-        <form-password @blur="updateParentValue" v-else-if="formItem.type === 'password'"/>
+        <form-select @change-value="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'select'" :options="formItem.additional.options" :label="formItem.label"/>
+        <form-radio @change-value="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'radio'" :options="formItem.additional.options" :label="formItem.label"/>
+        <form-password :updateValue="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'password'" :name="formItem.name" :label="formItem.label"/>
       </div>
 
-      <button type="submit" @click="console.log(formData.parent.items)">Отправить</button>
+      <button type="submit">Отправить</button>
       <button type="reset">Стереть</button>
     </form>
     </div>
@@ -37,9 +37,21 @@ export default {
       alert('Submit')
     },
     updateParentValue(parentName,name, newValue) {
-      console.log(parentName)
+      console.log(name)
+      if(name === 'repeat-pass'){
+        newValue = this.checkRepeatedPass(parentName,newValue)
+      }
+
       this.formData[parentName].items[name] = newValue;
     },
+    checkRepeatedPass(parentName,newValue){
+      if(this.formData[parentName].items.pass === newValue ){
+        return newValue;
+      }
+
+      alert("Данные не совпадают")
+      return ""
+    }
   },
   components: {FormPassword, FormRadio, FormSelect, FormInput},
   beforeMount() {

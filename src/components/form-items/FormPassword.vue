@@ -1,5 +1,5 @@
 <template>
-  <FormInput :label="label" type="text"/>
+  <FormInput :label="label" type="text" @blur="updateValue"/>
 </template>
 
 <script>
@@ -11,6 +11,10 @@ export default {
     label: {
       type: String,
       default: ''
+    },
+    updateValue:{
+      type:Function,
+      required:true,
     }
   },
   components: {
