@@ -1,5 +1,5 @@
 <template>
-  <FormInput :label="label" type="password" />
+  <FormInput :label="label" type="text"/>
 </template>
 
 <script>

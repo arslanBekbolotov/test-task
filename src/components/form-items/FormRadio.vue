@@ -6,7 +6,7 @@
         v-for="option in options"
         :key="option.value"
     >
-      <input required type="radio" name="radio" :id="option.value" :value="option.value" :checked="option.selected" />
+      <input required type="radio" name="radio" :id="option.name" :value="option.value" :checked="option.selected" />
       <label :for="option.value">{{ option.text }}</label>
     </div>
   </fieldset>
