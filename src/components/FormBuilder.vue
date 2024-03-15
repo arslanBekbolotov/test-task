@@ -1,19 +1,24 @@
 <template>
   <div class="form-builder container">
     <div v-for="(form,index) in formData" :key="index">
-    <form class="form" @submit.prevent="onSubmit(form.id)">
-      <h1>{{form.name}}</h1>
+      <form class="form" @submit.prevent="onSubmit(form.id)">
+        <h1>{{form.name}}</h1>
 
-      <div class="form-row" v-for="(formItem,i) in form.items" :key="i">
-        <form-input @blur="updateParentValue" :parent-name="form.id"  v-if="formItem.type === 'input'" :name="formItem.name" :label="formItem.label" />
-        <form-select @change-value="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'select'" :name="formItem.name" :options="formItem.additional.options" :label="formItem.label"/>
-        <form-radio @change-value="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'radio'" :name="formItem.name" :options="formItem.additional.options" :label="formItem.label"/>
-        <form-password :updateValue="updateParentValue" :parent-name="form.id" v-else-if="formItem.type === 'password'" :name="formItem.name" :label="formItem.label"/>
-      </div>
+        <div class="form-row" v-for="(formItem,i) in form.items" :key="i">
+          <component
+              :is="getComponentName(formItem.type)"
+              @change-value="updateParentValue"
+              :parent-name="form.id"
+              :name="formItem.name"
+              :label="formItem.label"
+              :options="formItem.additional?.options"
+              :updateValue="updateParentValue"
+          />
+        </div>
 
-      <button type="submit" :disabled="isDisabled">Отправить</button>
-      <button type="reset" @click="resetFields(form.id)">Стереть</button>
-    </form>
+        <button type="submit" :disabled="isDisabled">Отправить</button>
+        <button type="reset" @click="resetFields(form.id)">Стереть</button>
+      </form>
     </div>
   </div>
 </template>
@@ -23,19 +28,33 @@ import FormInput from "@/components/form-items/FormInput.vue";
 import FormSelect from "@/components/form-items/FormSelect.vue";
 import FormRadio from "@/components/form-items/FormRadio.vue";
 import FormPassword from "@/components/form-items/FormPassword.vue";
-import data from "../../form-config.json";
+
 
 export default {
   name: "FormBuilder",
-  data(){
-    return{
-     formData: data,
-      isDisabled:false,
+  data() {
+    return {
+      formData: null,
+      isDisabled: false,
+      passMatch:true,
     }
   },
   methods: {
+    async fetchFromData() {
+      try {
+        const response = await fetch("../../form-config.json");
+        this.formData = await response.json();
+      } catch (error) {
+        console.error("Ошибка при получении файла:", error);
+      }
+    },
     onSubmit(parentName) {
-      try{
+      try {
+        if (!this.formData) {
+          console.error("Форм дата еще не получена");
+          return;
+        }
+
         const newData = {}
         newData[parentName] = {};
 
@@ -43,58 +62,71 @@ export default {
           newData[parentName][item.name] = item.value
         })
 
-        console.log(newData)
         alert("Success")
-      }catch (e){
+      } catch (e) {
         console.error(e)
       }
     },
-    updateParentValue(parentName,name, newValue) {
-      if(name === 'repeat-pass'){
-        newValue = this.checkRepeatedPass(parentName,newValue)
+    updateParentValue(parentName, name, newValue) {
+      if (name === 'repeat-pass') {
+        this.validateFormPassword(newValue,name,parentName)
       }
 
       const item = this.formData[parentName].items.find(item => item.name === name);
-      console.log(item,name,newValue)
 
       if (item) {
         item.value = newValue;
       }
     },
-    checkRepeatedPass(parentName,newValue){
-      this.isDisabled = false
-      const item = this.formData[parentName].items.find(item => item.name === 'pass');
-
-      if(item.value !== newValue ){
-        alert("Данные не совпадают")
-        this.isDisabled = true
-      }
-
-      return newValue;
-    },
-    resetFields(parentName){
+    resetFields(parentName) {
       this.formData[parentName].items.forEach(item => item.value = '')
+    },
+    validateFormPassword(newValue,name,parentName){
+      const passwordField = document.getElementById(`password-${name}`);
+      const passwordValue = this.formData[parentName].items.find(item => item.name === 'pass').value;
+
+      if (newValue !== passwordValue) {
+        passwordField.setCustomValidity('Пароли не совпадают');
+      } else {
+        passwordField.setCustomValidity('');
+      }
+    },
+    getComponentName(type) {
+      switch (type) {
+        case 'input':
+          return 'FormInput';
+        case 'select':
+          return 'FormSelect';
+        case 'radio':
+          return 'FormRadio';
+        case 'password':
+          return 'FormPassword';
+        default:
+          return 'FormInput';
+      }
     }
   },
   components: {FormPassword, FormRadio, FormSelect, FormInput},
-  beforeMount() {
-   for (let key in this.formData) {
-     this.formData[key].id = key;
-     this.formData[key].items.forEach(item => item.value = "")
-   }
- }
+  async beforeMount() {
+    await this.fetchFromData();
+
+    for (let key in this.formData) {
+      this.formData[key].id = key;
+      this.formData[key].items.forEach(item => item.value = "")
+    }
+  }
 }
 </script>
 
 <style scoped>
-.form{
+.form {
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 30px;
 }
 
-button{
+button {
   align-self: flex-start;
 }
 </style>

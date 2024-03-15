@@ -2,6 +2,7 @@
   <div>
     <p>{{ label }}</p>
     <input
+        :id="'password-' + name"
         :name="name"
         :type="type"
         required
@@ -39,8 +40,9 @@ export default {
   },
   methods: {
     updateValue() {
-      this.$emit("blur",this.parentName, this.name, this.localValue);
+      this.$emit("change-value",this.parentName, this.name, this.localValue);
     },
+
   }
 }
 </script>
